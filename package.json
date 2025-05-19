@@ -1,0 +1,23 @@
+{
+  "name": "b3-projet-event-a-r",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/driri85/B3-Projet-Event-A-R.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/driri85/B3-Projet-Event-A-R/issues"
+  },
+  "homepage": "https://github.com/driri85/B3-Projet-Event-A-R#readme",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
