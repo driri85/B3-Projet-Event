@@ -34,7 +34,7 @@ app.use('/auth', authRouter);
 
 
 // Authentification
-app.post('/login',authenticateToken, async (req, res) => {
+app.post('/login', async (req, res) => {
     const { email, password } = req.body;
 
     const user = await dao.findByEmail(email);
@@ -99,6 +99,8 @@ app.delete('/users/:id',authenticateToken, async (req, res) => {
     else res.status(404).json({ message: 'User not found' });
 });
 
+const eventRoutes = require('./event/event-routes');
+app.use('/events', eventRoutes);
 
 app.listen(3000, () => {
     console.log("Le serveur a démarré");
