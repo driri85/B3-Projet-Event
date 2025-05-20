@@ -9,13 +9,18 @@ const { SECRET_JWT } = require('./core/config');
 app.use(bodyParser.json());
 const authRouter = require('./auth/auth-routes');
 app.use('/auth', authRouter);
-const cors = require('cors');
-app.use(cors());
-
 const eventRouter = require('./event/event-routes');
 app.use('/events', eventRouter);
 const authenticateToken = require('./middleware/authenticateToken');
 app.use('/events', authenticateToken, eventRouter);
+
+const cors = require('cors');
+app.use(cors({
+    origin: 'http://localhost:5173/', // autorise VITE
+    credentials: true                // autorise les cookies/headers d'auth
+  }));
+const connectDB = require('./core/mongodb'); // fichier de connexion
+connectDB(); // Connecte à MongoDB
 // SWAGGER
 // Init swagger middleware
 //const swaggerUI = require('swagger-ui-express');
