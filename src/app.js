@@ -3,6 +3,11 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const UserDAO = require('./dao/dao_login_mock');
 const jwt = require('jsonwebtoken');
+const cors = require('cors');
+app.use(cors({
+    origin: 'http://localhost:5173', // autorise VITE
+    credentials: true                // autorise les cookies/headers d'auth
+}));
 const app = express();
 const port = 3000;
 const dao = new UserDAO();
@@ -17,7 +22,7 @@ const eventRouter = require('./event/event-routes');
 app.use('/events', eventRouter);
 const authenticateToken = require('./middleware/authenticateToken');
 app.use('/events', authenticateToken, eventRouter);
-    
+
 // Route /me directe (protégée)
 app.get('/me', authenticateToken, async (req, res) => {
     const user = await dao.findById(req.user.id);
@@ -26,11 +31,6 @@ app.get('/me', authenticateToken, async (req, res) => {
 });
 
 
-const cors = require('cors');
-app.use(cors({
-    origin: 'http://localhost:5173', // autorise VITE
-    credentials: true                // autorise les cookies/headers d'auth
-}));
 const connectDB = require('./core/mongodb'); // fichier de connexion
 connectDB(); // Connecte à MongoDB
 
