@@ -1,10 +1,11 @@
+require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
-const DAOMock = require('./dao/dao_login_mock');
+const UserDAO = require('./dao/dao_login_mock');
 const jwt = require('jsonwebtoken');
 const app = express();
 const port = 3000;
-const dao = new DAOMock();
+const dao = new UserDAO();
 const { SECRET_JWT } = require('./core/config');
 app.use(bodyParser.json());
 const authRouter = require('./auth/auth-routes');
@@ -32,7 +33,7 @@ connectDB(); // Connecte à MongoDB
 //Pour s'authentifier:
 //Sur Postman:
 //allez sur http://localhost:3000/login en POST
-//sur Body: mettre les champs email et password:
+//sur Body > raw: mettre les champs email et password:
 // exemple:
 //{"email": "user1@gmail.com", "password": "123456"}
 //cliquer sur Send
@@ -92,6 +93,17 @@ app.delete('/users/:id',authenticateToken, async (req, res) => {
     const deletedUser = await dao.delete(req.params.id);
     if (deletedUser) res.json(deletedUser);
     else res.status(404).json({ message: 'User not found' });
+});
+
+app.get('/me', authenticateToken, async (req, res) => {
+    const user = await dao.findById(req.user.id);
+    if (!user) return res.status(404).json({ message: 'Utilisateur non trouvé' });
+
+    res.json({
+        email: user.email,
+        password: user.password,
+        admin: user.admin
+    });
 });
 
 
