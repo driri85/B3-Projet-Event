@@ -12,10 +12,12 @@ const authRouter = require('./auth/auth-routes');
 app.use('/login', authRouter);
 const userRouter = require('./user/user-routes');
 app.use('/users', userRouter);
+app.use('/auth', authRouter);
 const eventRouter = require('./event/event-routes');
 app.use('/events', eventRouter);
 const authenticateToken = require('./middleware/authenticateToken');
 app.use('/events', authenticateToken, eventRouter);
+
 const cors = require('cors');
 app.use(cors({
     origin: 'http://localhost:5173/', // autorise VITE
@@ -30,6 +32,9 @@ connectDB(); // Connecte à MongoDB
 //const swaggerDocument = require('./swagger_output.json');
 //app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 
+app.get('/events/test', (req, res) => {
+  res.send('Test route events OK');
+});
 
 app.listen(3000, () => {
     console.log("Le serveur a démarré");
