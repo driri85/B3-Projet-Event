@@ -1,35 +1,35 @@
-const { events } = require("./event-model");
+const Event = require("../models/Event");
 
-exports.getAllEvents = async () => {
-  return events;
+exports.getAllEvent = async () => {
+  return Event;
 };
 
 exports.getEventById = async (id) => {
-  return events.find(e => e.id === id);
+  return Event.find(e => e.id === id);
 };
 
 exports.createEvent = async (data) => {
   const newEvent = {
-    id: events.length + 1,
+    id: Event.length + 1,
     ...data,
     participants: []
   };
-  events.push(newEvent);
+  Event.push(newEvent);
   return newEvent;
 };
 
 exports.updateEvent = async (id, newData) => {
-  const index = events.findIndex(e => e.id === id);
+  const index = Event.findIndex(e => e.id === id);
   if (index === -1) return null;
 
-  events[index] = { ...events[index], ...newData };
-  return events[index];
+  Event[index] = { ...Event[index], ...newData };
+  return Event[index];
 };
 
 exports.deleteEvent = async (id) => {
-  const index = events.findIndex(e => e.id === id);
+  const index = Event.findIndex(e => e.id === id);
   if (index === -1) return null;
 
-  const deleted = events.splice(index, 1);
+  const deleted = Event.splice(index, 1);
   return deleted[0];
 };
