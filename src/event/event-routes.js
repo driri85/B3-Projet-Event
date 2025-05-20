@@ -39,7 +39,7 @@ router.post("/", isAdmin, async (request, response) => {
 
 // 🔐 PUT modifier un événement (admin seulement)
 router.put("/:id", isAdmin, async (request, response) => {
-  const id = parseInt(request.params.id);
+  const id = request.params.id;
   const updatedData = request.body;
 
   const updatedEvent = await dao.update(id, updatedData);
@@ -52,7 +52,7 @@ router.put("/:id", isAdmin, async (request, response) => {
 
 // 🔐 DELETE supprimer un événement (admin seulement)
 router.delete("/:id", isAdmin, async (request, response) => {
-  const id = parseInt(request.params.id);
+  const id = request.params.id;
   const deletedEvent = await dao.delete(id);
 
   if (!deletedEvent) {

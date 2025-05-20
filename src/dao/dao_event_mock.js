@@ -14,8 +14,8 @@ class DAOMongo {
     }
 
     async create(data) {
-        const Event = new Event(data);
-        return await Event.save();
+        const newEvent = new Event(data);
+        return await newEvent.save();
     }
 
     async update(id, data) {
