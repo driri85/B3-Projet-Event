@@ -1,18 +1,22 @@
+require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
-const DAOMock = require('./dao/dao_login_mock');
+const UserDAO = require('./dao/dao_login_mock');
 const jwt = require('jsonwebtoken');
 const app = express();
 const port = 3000;
-const dao = new DAOMock();
+const dao = new UserDAO();
 const { SECRET_JWT } = require('./core/config');
 app.use(bodyParser.json());
 const authRouter = require('./auth/auth-routes');
 app.use('/auth', authRouter);
 const cors = require('cors');
-app.use(cors());
-require('dotenv').config();
-const { MongoClient, ServerApiVersion } = require('mongodb');
+app.use(cors({
+    origin: 'http://localhost:5173/', // autorise VITE
+    credentials: true                // autorise les cookies/headers d'auth
+  }));
+const connectDB = require('./core/mongodb'); // fichier de connexion
+connectDB(); // Connecte à MongoDB
 // SWAGGER
 // Init swagger middleware
 //const swaggerUI = require('swagger-ui-express');
@@ -102,34 +106,17 @@ app.delete('/users/:id',authenticateToken, async (req, res) => {
 });
 
 app.get('/me', authenticateToken, async (req, res) => {
-    const user = await dao.findById(req.user.id); // Optionnel : recharger depuis DAO
+    const user = await dao.findById(req.user.id);
     if (!user) return res.status(404).json({ message: 'Utilisateur non trouvé' });
-    res.json(user);
-});
-/*
-const client = new MongoClient(process.env.MONGO_URI, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  }
+
+    res.json({
+        email: user.email,
+        password: user.password,
+        admin: user.admin
+    });
 });
 
 
-async function run() {
-  try {
-    // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
-    // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
-  } finally {
-    // Ensures that the client will close when you finish/error
-    await client.close();
-  }
-}
-run().catch(console.dir);
-*/
 app.listen(3000, () => {
     console.log("Le serveur a démarré");
 });
