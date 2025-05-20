@@ -2,15 +2,11 @@ const express = require('express');
 const router = express.Router();
 const authService = require('./auth-service');
 
-router.post("/", async (request, response) => {
-    // Si email / password invalide => erreur
-    const loginRequest = { email : request.body.email, password: request.body.password};
-
+// Route POST /login
+router.post('/', async (req, res) => {
+    const loginRequest = { email: req.body.email, password: req.body.password };
     const responseAPI = await authService.auth(loginRequest);
-
-    return response.json(responseAPI);
+    return res.json(responseAPI);
 });
 
-
-// Exporter le router
 module.exports = router;
