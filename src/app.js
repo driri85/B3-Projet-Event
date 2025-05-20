@@ -7,9 +7,11 @@ const port = 3000;
 const dao = new DAOMock();
 const { SECRET_JWT } = require('./core/config');
 app.use(bodyParser.json());
-
 const authRouter = require('./auth/auth-routes');
 app.use('/auth', authRouter);
+const cors = require('cors');
+app.use(cors());
+
 const eventRouter = require('./event/event-routes');
 app.use('/events', eventRouter);
 const authenticateToken = require('./middleware/authenticateToken');
