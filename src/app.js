@@ -10,7 +10,14 @@ app.use(bodyParser.json());
 
 const authRouter = require('./auth/auth-routes');
 app.use('/auth', authRouter);
+<<<<<<< Updated upstream
 
+=======
+const cors = require('cors');
+app.use(cors());
+require('dotenv').config();
+const { MongoClient, ServerApiVersion } = require('mongodb');
+>>>>>>> Stashed changes
 // SWAGGER
 // Init swagger middleware
 //const swaggerUI = require('swagger-ui-express');
@@ -22,9 +29,13 @@ app.use('/auth', authRouter);
 //Pour s'authentifier:
 //Sur Postman:
 //allez sur http://localhost:3000/login en POST
-//sur Body: mettre les champs email et password:
+//sur Body > raw: mettre les champs email et password:
 // exemple:
+<<<<<<< Updated upstream
 //{email: 'user1@gmail.com', password: '123456'}
+=======
+//{"email": "user1@gmail.com", "password": "123456"}
+>>>>>>> Stashed changes
 //cliquer sur Send
 //vous devriez avoir un token
 // copier le token dans "Authorization"
@@ -99,7 +110,35 @@ app.delete('/users/:id',authenticateToken, async (req, res) => {
     else res.status(404).json({ message: 'User not found' });
 });
 
+app.get('/me', authenticateToken, async (req, res) => {
+    const user = await dao.findById(req.user.id); // Optionnel : recharger depuis DAO
+    if (!user) return res.status(404).json({ message: 'Utilisateur non trouvé' });
+    res.json(user);
+});
+/*
+const client = new MongoClient(process.env.MONGO_URI, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  }
+});
 
+
+async function run() {
+  try {
+    // Connect the client to the server	(optional starting in v4.7)
+    await client.connect();
+    // Send a ping to confirm a successful connection
+    await client.db("admin").command({ ping: 1 });
+    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+  } finally {
+    // Ensures that the client will close when you finish/error
+    await client.close();
+  }
+}
+run().catch(console.dir);
+*/
 app.listen(3000, () => {
     console.log("Le serveur a démarré");
 });
