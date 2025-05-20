@@ -3,15 +3,15 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const UserDAO = require('./dao/dao_login_mock');
 const jwt = require('jsonwebtoken');
+const app = express();
+const port = 3000;
+const dao = new UserDAO();
+const { SECRET_JWT } = require('./core/config');
 const cors = require('cors');
 app.use(cors({
     origin: 'http://localhost:5173', // autorise VITE
     credentials: true                // autorise les cookies/headers d'auth
 }));
-const app = express();
-const port = 3000;
-const dao = new UserDAO();
-const { SECRET_JWT } = require('./core/config');
 app.use(bodyParser.json());
 const authRouter = require('./auth/auth-routes');
 app.use('/login', authRouter);
