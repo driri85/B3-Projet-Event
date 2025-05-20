@@ -7,17 +7,12 @@ const port = 3000;
 const dao = new DAOMock();
 const { SECRET_JWT } = require('./core/config');
 app.use(bodyParser.json());
-
 const authRouter = require('./auth/auth-routes');
 app.use('/auth', authRouter);
-<<<<<<< Updated upstream
-
-=======
 const cors = require('cors');
 app.use(cors());
 require('dotenv').config();
 const { MongoClient, ServerApiVersion } = require('mongodb');
->>>>>>> Stashed changes
 // SWAGGER
 // Init swagger middleware
 //const swaggerUI = require('swagger-ui-express');
@@ -31,11 +26,7 @@ const { MongoClient, ServerApiVersion } = require('mongodb');
 //allez sur http://localhost:3000/login en POST
 //sur Body > raw: mettre les champs email et password:
 // exemple:
-<<<<<<< Updated upstream
-//{email: 'user1@gmail.com', password: '123456'}
-=======
-//{"email": "user1@gmail.com", "password": "123456"}
->>>>>>> Stashed changes
+//{"email": "user1@gmail.com", password: "123456"}
 //cliquer sur Send
 //vous devriez avoir un token
 // copier le token dans "Authorization"
@@ -45,7 +36,7 @@ const { MongoClient, ServerApiVersion } = require('mongodb');
 
 
 // Authentification
-app.post('/login',authenticateToken, async (req, res) => {
+app.post('/login', async (req, res) => {
     const { email, password } = req.body;
 
     const user = await dao.findByEmail(email);
