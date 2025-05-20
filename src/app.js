@@ -7,9 +7,10 @@ const port = 3000;
 const dao = new DAOMock();
 const { SECRET_JWT } = require('./core/config');
 app.use(bodyParser.json());
-
 const authRouter = require('./auth/auth-routes');
 app.use('/auth', authRouter);
+const cors = require('cors');
+app.use(cors());
 
 // SWAGGER
 // Init swagger middleware
@@ -24,7 +25,7 @@ app.use('/auth', authRouter);
 //allez sur http://localhost:3000/login en POST
 //sur Body: mettre les champs email et password:
 // exemple:
-//{email: 'user1@gmail.com', password: '123456'}
+//{"email": "user1@gmail.com", password: "123456"}
 //cliquer sur Send
 //vous devriez avoir un token
 // copier le token dans "Authorization"
@@ -34,7 +35,7 @@ app.use('/auth', authRouter);
 
 
 // Authentification
-app.post('/login',authenticateToken, async (req, res) => {
+app.post('/login', async (req, res) => {
     const { email, password } = req.body;
 
     const user = await dao.findByEmail(email);
