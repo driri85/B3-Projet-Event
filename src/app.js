@@ -10,7 +10,10 @@ app.use(bodyParser.json());
 
 const authRouter = require('./auth/auth-routes');
 app.use('/auth', authRouter);
-
+const eventRouter = require('./event/event-routes');
+app.use('/events', eventRouter);
+const authenticateToken = require('./middleware/authenticateToken');
+app.use('/events', authenticateToken, eventRouter);
 // SWAGGER
 // Init swagger middleware
 //const swaggerUI = require('swagger-ui-express');
@@ -24,7 +27,7 @@ app.use('/auth', authRouter);
 //allez sur http://localhost:3000/login en POST
 //sur Body: mettre les champs email et password:
 // exemple:
-//{email: 'user1@gmail.com', password: '123456'}
+//{"email": "user1@gmail.com", "password": "123456"}
 //cliquer sur Send
 //vous devriez avoir un token
 // copier le token dans "Authorization"
@@ -50,21 +53,6 @@ app.post('/login', async (req, res) => {
 
     res.json({ token });
 });
-
-// Middleware d'authentification
-function authenticateToken(req, res, next) {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
-
-    if (!token) return res.status(401).json({ message: 'Token requis' });
-
-    jwt.verify(token, SECRET_JWT, (err, user) => {
-        if (err) return res.status(403).json({ message: 'Token invalide' });
-
-        req.user = user; // Attache les infos utilisateur
-        next();
-    });
-}
 
 // donne les information de tout les utilisateurs
 app.get('/users', authenticateToken, async (req, res) => {
@@ -99,8 +87,11 @@ app.delete('/users/:id',authenticateToken, async (req, res) => {
     else res.status(404).json({ message: 'User not found' });
 });
 
-const eventRoutes = require('./event/event-routes');
-app.use('/events', eventRoutes);
+
+
+app.get('/events/test', (req, res) => {
+  res.send('Test route events OK');
+});
 
 app.listen(3000, () => {
     console.log("Le serveur a démarré");

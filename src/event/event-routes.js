@@ -1,12 +1,14 @@
 const express = require("express");
 const router = express.Router();
-
-const eventController = require("./event.controller");
+const sendResponse = require("../utils/response");
+const eventController = require("./event-controller");
 const mockAuth = require("../middleware/mockAuth");
 const isAdmin = require("../middleware/isAdmin");
-
+const app = express();
+const authenticateToken = require('../middleware/authenticateToken');
 // Appliquer le middleware de simulation d'utilisateur connecté
-router.use(mockAuth);
+router.use(authenticateToken);
+
 
 // 📌 GET tous les événements (public)
 router.get("/", async (request, response) => {
