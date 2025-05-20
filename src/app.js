@@ -17,10 +17,18 @@ const eventRouter = require('./event/event-routes');
 app.use('/events', eventRouter);
 const authenticateToken = require('./middleware/authenticateToken');
 app.use('/events', authenticateToken, eventRouter);
+    
+// Route /me directe (protégée)
+app.get('/me', authenticateToken, async (req, res) => {
+    const user = await dao.findById(req.user.id);
+    if (!user) return res.status(404).json({ message: 'Utilisateur non trouvé' });
+    res.json({ email: user.email, admin: user.admin });
+});
+
 
 const cors = require('cors');
 app.use(cors({
-    origin: 'http://localhost:5173/', // autorise VITE
+    origin: 'http://localhost:5173', // autorise VITE
     credentials: true                // autorise les cookies/headers d'auth
 }));
 const connectDB = require('./core/mongodb'); // fichier de connexion

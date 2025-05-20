@@ -11,6 +11,12 @@ router.get('/', async (req, res) => {
     res.json(users);
 });
 
+router.get('/me', async (req, res) => {
+    const user = await dao.findById(req.user.id);
+    if (!user) return res.status(404).json({ message: 'Utilisateur non trouvé' });
+    res.json({ email: user.email, admin: user.admin }); // Masque id & password
+});
+
 router.get('/:id', async (req, res) => {
     const user = await dao.findById(req.params.id);
     if (user) res.json(user);
@@ -34,10 +40,6 @@ router.delete('/:id', async (req, res) => {
     else res.status(404).json({ message: 'User not found' });
 });
 
-router.get('/me', async (req, res) => {
-    const user = await dao.findById(req.user.id);
-    if (!user) return res.status(404).json({ message: 'Utilisateur non trouvé' });
-    res.json({ email: user.email, admin: user.admin }); // Masque id & password
-});
+
 
 module.exports = router;
