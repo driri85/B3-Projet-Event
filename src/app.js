@@ -26,7 +26,7 @@ const { MongoClient, ServerApiVersion } = require('mongodb');
 //allez sur http://localhost:3000/login en POST
 //sur Body > raw: mettre les champs email et password:
 // exemple:
-//{"email": "user1@gmail.com", password: "123456"}
+//{"email": "user1@gmail.com", "password": "123456"}
 //cliquer sur Send
 //vous devriez avoir un token
 // copier le token dans "Authorization"
