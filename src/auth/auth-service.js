@@ -16,7 +16,7 @@
                 return buildAPIResponse("202", " email/mot de passe incorrect", null);
             }
 
-            const token = jwt.sign({ id: loggedUser._id, email: loggedUser.email },SECRET_JWT);
+            const token = jwt.sign({ id: loggedUser._id, email: loggedUser.email, admin: loggedUser.admin },SECRET_JWT);
 
             return buildAPIResponse("200", "Authentifié(e) avec succès", {token});
         }

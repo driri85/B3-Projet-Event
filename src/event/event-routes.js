@@ -3,7 +3,6 @@ const router = express.Router();
 const sendResponse = require("../utils/response");
 const EventDAO = require('../dao/dao_event_mock');
 const dao = new EventDAO();
-const mockAuth = require("../middleware/mockAuth");
 const isAdmin = require("../middleware/isAdmin");
 const app = express();
 const authenticateToken = require('../middleware/authenticateToken');
