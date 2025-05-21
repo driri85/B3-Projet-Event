@@ -22,6 +22,31 @@ const authenticateToken = require('./middleware/authenticateToken');
 app.use('/events', authenticateToken, eventRouter);
 
 // Route /me directe (protégée)
+/**
+ * @swagger
+ * /me:
+ *   get:
+ *     summary: Get current authenticated user's info
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved user information
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 email:
+ *                   type: string
+ *                   example: user@example.com
+ *                 admin:
+ *                   type: boolean
+ *                   example: false
+ *       404:
+ *         description: User not found
+ */
 app.get('/me', authenticateToken, async (req, res) => {
     const user = await dao.findById(req.user.id);
     if (!user) return res.status(404).json({ message: 'Utilisateur non trouvé' });
@@ -31,11 +56,13 @@ app.get('/me', authenticateToken, async (req, res) => {
 const connectDB = require('./core/mongodb'); // fichier de connexion
 connectDB(); // Connecte à MongoDB
 
-// SWAGGER
-// Init swagger middleware
-//const swaggerUI = require('swagger-ui-express');
-//const swaggerDocument = require('./swagger_output.json');
-//app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument));
+// SWAGGER CONFIG
+const swaggerUI = require('swagger-ui-express');           // Import Swagger UI middleware
+const swaggerSpec = require('./swagger');                  // Import your Swagger config
+
+// Serve Swagger docs at http://localhost:3000/api-docs
+app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
+
 
 app.listen(3000, () => {
     console.log("Le serveur a démarré");
