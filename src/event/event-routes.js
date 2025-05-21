@@ -9,14 +9,28 @@ const authenticateToken = require('../middleware/authenticateToken');
 // Appliquer le middleware de simulation d'utilisateur connecté
 router.use(authenticateToken);
 
-
-// 📌 GET tous les événements (public)
+/**
+ * @function getAllEvents
+ * @name GET /events
+ * @description Retrieve all events.
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {Object[]} 200 - Array of event objects
+ */
 router.get("/", async (request, response) => {
   const events = await dao.findAll();
   return response.json(events);
 });
 
-// 📌 GET un événement par ID (public)
+/**
+ * @function getEventById
+ * @name GET /events/:id
+ * @description Retrieve a specific event by its ID.
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {Object} 200 - Event object
+ * @returns {Object} 404 - Event not found
+ */
 router.get("/:id", async (request, response) => {
   const id = parseInt(request.params.id);
   const event = await dao.findById(id);
@@ -28,7 +42,14 @@ router.get("/:id", async (request, response) => {
   return response.json(event);
 });
 
-// 🔐 POST créer un événement (admin seulement)
+/**
+ * @function createEvent
+ * @name POST /events
+ * @description Create a new event.
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {Object} 201 - Newly created event object
+ */
 router.post("/", isAdmin, async (request, response) => {
   const eventData = request.body;
   const newEvent = await dao.create(eventData);
@@ -36,7 +57,15 @@ router.post("/", isAdmin, async (request, response) => {
   return response.status(201).json(newEvent);
 });
 
-// 🔐 PUT modifier un événement (admin seulement)
+/**
+ * @function updateEvent
+ * @name PUT /events/:id
+ * @description Update an existing event by its ID.
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {Object} 200 - Updated event object
+ * @returns {Object} 404 - Event not found
+ */
 router.put("/:id", isAdmin, async (request, response) => {
   const id = request.params.id;
   const updatedData = request.body;
@@ -49,7 +78,15 @@ router.put("/:id", isAdmin, async (request, response) => {
   return response.json(updatedEvent);
 });
 
-// 🔐 DELETE supprimer un événement (admin seulement)
+/**
+ * @function deleteEvent
+ * @name DELETE /events/:id
+ * @description Delete an event by its ID.
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {Object} 200 - Deleted event object
+ * @returns {Object} 404 - Event not found
+ */
 router.delete("/:id", isAdmin, async (request, response) => {
   const id = request.params.id;
   const deletedEvent = await dao.delete(id);
