@@ -10,38 +10,37 @@ router.use(authenticateToken); // protège toutes les routes ci-dessous
 
 router.get('/', async (req, res) => {
     const users = await dao.findAll();
-    res.json(users);
+    res.json(buildAPIResponse("200", "Utilisateur trouvé", {users}));
 });
 
 router.get('/isadmin', async (req, res) => {
     if (!req.user || !req.user.admin) {
         return res.json(buildAPIResponse("202", "pas admin", { admin: false }));
     }
-
     return res.json(buildAPIResponse("200", "admin", { admin: true }));
 });
 
 router.get('/:id', async (req, res) => {
     const user = await dao.findById(req.params.id);
-    if (user) res.json(user);
-    else res.status(404).json({ message: 'User not found' });
+    if (user) res.json(buildAPIResponse("200", "Utilisateur trouvé", {user}));
+    else res.json(buildAPIResponse("404", "Utilisateur non trouvé", { user: null }));
 });
 
 router.post('/', async (req, res) => {
     const newUser = await dao.create(req.body);
-    res.status(201).json(newUser);
+    res.json(buildAPIResponse("200", "Nouvel utilisateur créé", { newUser}));
 });
 
 router.put('/:id', async (req, res) => {
     const updatedUser = await dao.update(req.params.id, req.body);
-    if (updatedUser) res.json(updatedUser);
-    else res.status(404).json({ message: 'User not found' });
+    if (updatedUser) res.json(buildAPIResponse("200", "Utilisateur trouvé et mis à jour", { updatedUser }));
+    res.json(buildAPIResponse("404", "Utilisateur non trouvé", { user: null }));
 });
 
 router.delete('/:id', async (req, res) => {
     const deletedUser = await dao.delete(req.params.id);
-    if (deletedUser) res.json(deletedUser);
-    else res.status(404).json({ message: 'User not found' });
+    if (deletedUser) res.json(buildAPIResponse("200", "Utilisateur trouvé et supprimé", { deletedUser }));
+    else res.json(buildAPIResponse("404", "Utilisateur non trouvé", { user: null }));
 });
 
 

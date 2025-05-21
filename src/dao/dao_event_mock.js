@@ -1,29 +1,29 @@
-const Event = require('../models/Event');
+const event = require('../models/event');
 
 class DAOMongo {
     async findAll() {
-        return await Event.find();
+        return await event.find();
     }
 
     async findById(id) {
-        return await Event.findById(id);
+        return await event.findById(id);
     }
 
     async findByEmail(email) {
-        return await Event.findOne({ email });
+        return await event.findOne({ email });
     }
 
     async create(data) {
-        const newEvent = new Event(data);
-        return await newEvent.save();
+        const newevent = new event(data);
+        return await newevent.save();
     }
 
     async update(id, data) {
-        return await Event.findByIdAndUpdate(id, data, { new: true });
+        return await event.findByIdAndUpdate(id, data, { new: true });
     }
 
     async delete(id) {
-        return await Event.findByIdAndDelete(id);
+        return await event.findByIdAndDelete(id);
     }
 }
 
