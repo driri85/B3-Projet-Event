@@ -3,6 +3,8 @@ const router = express.Router();
 const UserDAO = require('../dao/dao_login_mock');
 const dao = new UserDAO();
 const authenticateToken = require('../middleware/authenticateToken');
+const isAdmin = require("../middleware/isAdmin");
+const { buildAPIResponse } = require('../core/helpers-library');
 
 router.use(authenticateToken); // protège toutes les routes ci-dessous
 
@@ -11,10 +13,12 @@ router.get('/', async (req, res) => {
     res.json(users);
 });
 
-router.get('/me', async (req, res) => {
-    const user = await dao.findById(req.user.id);
-    if (!user) return res.status(404).json({ message: 'Utilisateur non trouvé' });
-    res.json({ email: user.email, admin: user.admin }); // Masque id & password
+router.get('/isadmin', async (req, res) => {
+    if (!req.user || !req.user.admin) {
+        return res.json(buildAPIResponse("202", "pas admin", { admin: false }));
+    }
+
+    return res.json(buildAPIResponse("200", "admin", { admin: true }));
 });
 
 router.get('/:id', async (req, res) => {
@@ -39,6 +43,7 @@ router.delete('/:id', async (req, res) => {
     if (deletedUser) res.json(deletedUser);
     else res.status(404).json({ message: 'User not found' });
 });
+
 
 
 
