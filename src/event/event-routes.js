@@ -13,19 +13,22 @@ router.use(authenticateToken);
 /**
  * @function getAllEvents
  * @name GET /events
- * @description Retrieve all events.
- * @param {Object} req - Express req object
- * @param {Object} res - Express res object
- * @returns {Object[]} 200 - Array of event objects
+ * @description Retrieve all events with participant info
  */
 router.get("/", async (req, res) => {
   const events = await dao.findAll();
-  return res.json(buildAPIResponse("200", "Événement trouvé", {events}));
-});
+  const userId = req.user.id;
 
+  const enrichedEvents = events.map(event => {
+    const isRegistered = event.participants.map(p => p.toString()).includes(userId);
+    return {
+      ...event.toObject(),
+      participantsCount: event.participants.length,
+      isRegistered
+    };
+  });
 
-app.get('/test', (req, res) => {
-  res.json(buildAPIResponse("200", "Test event OK", {events}));
+  return res.json(buildAPIResponse("200", "Liste des événements", { events: enrichedEvents }));
 });
 
 /**
@@ -38,15 +41,21 @@ app.get('/test', (req, res) => {
  * @returns {Object} 404 - Event not found
  */
 router.get("/:id", async (req, res) => {
-  const id = parseInt(req.params.id);
   const event = await dao.findById(id);
 
   if (!event) {
-    return res.json(buildAPIResponse("404", "Événement non trouvé", {event : null}));
-    
+    return res.json(buildAPIResponse("404", "Événement non trouvé", { event: null }));
   }
 
-  return res.json(buildAPIResponse("200", "Événement trouvé", {event}));
+  const isRegistered = event.participants.map(p => p.toString()).includes(req.user.id);
+
+  return res.json(buildAPIResponse("200", "Événement trouvé", {
+    event: {
+      ...event.toObject(),
+      participantsCount: event.participants.length,
+      isRegistered
+    }
+  }));
 });
 
 /**
@@ -60,8 +69,7 @@ router.get("/:id", async (req, res) => {
 router.post("/", isAdmin, async (req, res) => {
   const eventData = req.body;
   const newEvent = await dao.create(eventData);
-
-  return res.json(buildAPIResponse("200", "Événement créé", {newEvent}));
+  return res.json(buildAPIResponse("200", "Événement créé", { newEvent }));
 });
 
 /**
@@ -79,10 +87,10 @@ router.put("/:id", isAdmin, async (req, res) => {
 
   const updatedEvent = await dao.update(id, updatedData);
   if (!updatedEvent) {
-    return res.json(buildAPIResponse("404", "Événement non trouvé", {updatedEvent : null}));
+    return res.json(buildAPIResponse("404", "Événement non trouvé", { updatedEvent: null }));
   }
 
-  return res.json(buildAPIResponse("200", "Événement mis a jour", {updatedEvent}));
+  return res.json(buildAPIResponse("200", "Événement mis à jour", { updatedEvent }));
 });
 
 /**
@@ -99,10 +107,57 @@ router.delete("/:id", isAdmin, async (req, res) => {
   const deletedEvent = await dao.delete(id);
 
   if (!deletedEvent) {
-    return res.json(buildAPIResponse("404", "Événement non trouvé", {deletedEvent : null}));
+    return res.json(buildAPIResponse("404", "Événement non trouvé", { deletedEvent: null }));
   }
 
-  return res.json(buildAPIResponse("200", "Événement supprimer", {deletedEvent}));
+  return res.json(buildAPIResponse("200", "Événement supprimé", { deletedEvent }));
 });
 
-module.exports = router;
+/**
+ * @function registerUser
+ * @name POST /events/:id/register
+ */
+router.post('/:id/register', async (req, res) => {
+  const userId = req.user.id;
+  const eventId = req.params.id;
+
+  const event = await dao.findById(eventId);
+  if (!event) {
+    return res.json(buildAPIResponse("404", "Événement introuvable", {}));
+  }
+
+  if (event.participants.includes(userId)) {
+    return res.json(buildAPIResponse("400", "Utilisateur déjà inscrit", {}));
+  }
+
+  if (event.participants.length >= event.capacity) {
+    return res.json(buildAPIResponse("400", "Capacité maximale atteinte", {}));
+  }
+
+  const updatedEvent = await dao.registerUser(eventId, userId);
+  return res.json(buildAPIResponse("200", "Inscription réussie", { updatedEvent }));
+});
+
+/**
+ * @function unregisterUser
+ * @name POST /events/:id/unregister
+ */
+router.post('/:id/unregister', async (req, res) => {
+  const userId = req.user.id;
+  const eventId = req.params.id;
+
+  const event = await dao.findById(eventId);
+  if (!event) {
+    return res.json(buildAPIResponse("404", "Événement introuvable", {}));
+  }
+
+  const isRegistered = event.participants.includes(userId);
+  if (!isRegistered) {
+    return res.json(buildAPIResponse("400", "Utilisateur non inscrit", {}));
+  }
+
+  const updatedEvent = await dao.unregisterUser(eventId, userId);
+  return res.json(buildAPIResponse("200", "Désinscription réussie", { updatedEvent }));
+});
+
+module.exports = router

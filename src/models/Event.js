@@ -5,8 +5,9 @@ const eventSchema = new mongoose.Schema({
     description: { type: String, required: true },
     date: { type: Date, required: true },
     location: { type: String, required: true },
-    maxParticipants: { type: Number, required: true },
-    participants: { type: [String], required: true },
+    participants: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    capacity: { type: Number, required: true }
 });
 
 module.exports = mongoose.model('Event', eventSchema);
+
