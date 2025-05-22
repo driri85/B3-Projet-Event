@@ -28,7 +28,7 @@ router.use(authenticateToken); // Protect all routes below with JWT token
  */
 router.get('/', async (req, res) => {
     const users = await dao.findAll();
-    res.json(buildAPIResponse("200", "Utilisateur trouvé", {users}));
+    res.json(buildAPIResponse("200", "Utilisateur trouvé", { users }));
 });
 
 /**
@@ -54,7 +54,7 @@ router.get('/', async (req, res) => {
  */
 router.get('/:id', async (req, res) => {
     const user = await dao.findById(req.params.id);
-    if (user) res.json(buildAPIResponse("200", "Utilisateur trouvé", {user}));
+    if (user) res.json(buildAPIResponse("200", "Utilisateur trouvé", { user }));
     else res.json(buildAPIResponse("404", "Utilisateur non trouvé", { user: null }));
 });
 
@@ -70,10 +70,19 @@ router.get('/:id', async (req, res) => {
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *               - firstName
+ *               - lastName
  *             properties:
  *               email:
  *                 type: string
  *               password:
+ *                 type: string
+ *               firstName:
+ *                 type: string
+ *               lastName:
  *                 type: string
  *               admin:
  *                 type: boolean
@@ -83,7 +92,7 @@ router.get('/:id', async (req, res) => {
  */
 router.post('/', async (req, res) => {
     const newUser = await dao.create(req.body);
-    res.json(buildAPIResponse("200", "Nouvel utilisateur créé", { newUser}));
+    res.json(buildAPIResponse("200", "Nouvel utilisateur créé", { newUser }));
 });
 
 /**
@@ -112,6 +121,10 @@ router.post('/', async (req, res) => {
  *                 type: string
  *               password:
  *                 type: string
+ *               firstName:
+ *                 type: string
+ *               lastName:
+ *                 type: string
  *               admin:
  *                 type: boolean
  *     responses:
@@ -123,7 +136,7 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
     const updatedUser = await dao.update(req.params.id, req.body);
     if (updatedUser) res.json(buildAPIResponse("200", "Utilisateur trouvé et mis à jour", { updatedUser }));
-    res.json(buildAPIResponse("404", "Utilisateur non trouvé", { user: null }));
+    else res.json(buildAPIResponse("404", "Utilisateur non trouvé", { user: null }));
 });
 
 /**
