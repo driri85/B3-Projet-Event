@@ -26,7 +26,7 @@ app.use('/events', authenticateToken, eventRouter);
  * @swagger
  * /me:
  *   get:
- *     summary: Get current authenticated user's info
+ *     summary: Get current authenticated user's info (raw format)
  *     tags: [Auth]
  *     security:
  *       - bearerAuth: []
@@ -38,6 +38,9 @@ app.use('/events', authenticateToken, eventRouter);
  *             schema:
  *               type: object
  *               properties:
+ *                 id:
+ *                   type: string
+ *                   example: 682c5494abcc4b5ec4f9bed1
  *                 email:
  *                   type: string
  *                   example: user@example.com
@@ -46,6 +49,14 @@ app.use('/events', authenticateToken, eventRouter);
  *                   example: false
  *       404:
  *         description: User not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Utilisateur non trouvé
  */
 app.get('/me', authenticateToken, async (req, res) => {
     const user = await dao.findById(req.user.id);
@@ -57,7 +68,7 @@ app.get('/me', authenticateToken, async (req, res) => {
  * @swagger
  * /me2:
  *   get:
- *     summary: Get current authenticated user's info
+ *     summary: Get current authenticated user's info (wrapped format)
  *     tags: [Auth]
  *     security:
  *       - bearerAuth: []
@@ -81,6 +92,9 @@ app.get('/me', authenticateToken, async (req, res) => {
  *                     user:
  *                       type: object
  *                       properties:
+ *                         id:
+ *                           type: string
+ *                           example: 682c5494abcc4b5ec4f9bed1
  *                         email:
  *                           type: string
  *                           example: user@example.com
