@@ -97,7 +97,7 @@ app.get('/me', authenticateToken, async (req, res) => {
  *                           example: 682c5494abcc4b5ec4f9bed1
  *                         email:
  *                           type: string
- *                           example: user@example.com
+ *                           example: user1@gmail.com
  *                         admin:
  *                           type: boolean
  *                           example: false
