@@ -4,15 +4,20 @@ Ce projet Node.js constitue la partie backend d'une application de gestion d'év
 
 ## Table des matières
 
-- [Technologies utilisées](#technologies-utilisées)
-- [Structure du projet](#structure-du-projet)
-- [Installation](#installation)
-- [Variables d’environnement](#variables-denvironnement)
-- [Démarrage du serveur](#démarrage-du-serveur)
-- [Fonctionnalités principales](#fonctionnalités-principales)
-- [Routes API](#routes-api)
-- [Authentification](#authentification)
-- [Règles et gestion des rôles](#règles-et-gestion-des-rôles)
+- [B3 Projet Event - Backend](#b3-projet-event---backend)
+  - [Table des matières](#table-des-matières)
+  - [Technologies utilisées](#technologies-utilisées)
+  - [Structure du projet](#structure-du-projet)
+  - [Installation](#installation)
+  - [Variables d’environnement](#variables-denvironnement)
+  - [Démarrage du serveur](#démarrage-du-serveur)
+  - [Fonctionnalités principales](#fonctionnalités-principales)
+  - [Routes API](#routes-api)
+    - [Auth](#auth)
+    - [Events](#events)
+  - [Authentification](#authentification)
+  - [Règles et gestion des rôles](#règles-et-gestion-des-rôles)
+  - [Auteurs](#auteurs)
 
 ---
 
@@ -65,9 +70,8 @@ B3-Projet-Event/
 Créer un fichier `.env` à la racine du projet avec les clés suivantes :
 
 ```
-PORT=3000
-MONGODB_URI=mongodb://localhost:27017/events
-JWT_SECRET=your_jwt_secret_key
+MONGODB_URI="mongodb+srv://<User>:<Password>@b3-projet-event.<clusterID>.mongodb.net/<BDDName>?retryWrites=true&w=majority&appName=B3-Projet-Event"
+SUPER_ADMIN_EMAIL=<email>
 ```
 
 ---
