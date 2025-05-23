@@ -14,8 +14,8 @@ class DAOMongo {
     }
 
     async create(data) {
-        const user = new user(data);
-        return await user.save();
+        const newUser = new user(data);
+        return await newUser.save();
     }
 
     async update(id, data) {
