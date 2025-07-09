@@ -20,8 +20,7 @@ jobs:
           node-version: '20'
 
       - name: Install dependencies & build
-        run: |
-          npm ci
+        run: npm ci
 
       - name: Install EB CLI
         run: |
@@ -35,54 +34,16 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Package and Deploy to Elastic Beanstalk
+      - name: Init & Deploy to Elastic Beanstalk
         run: |
-          # Define version label
-          VERSION_LABEL="app-$(date +%s)"
-          ZIPFILE="${VERSION_LABEL}.zip"
-          AWS_BUCKET="elasticbeanstalk-${AWS_REGION}-${AWS_ACCOUNT_ID}"
-          
-          # Create archive
-          git archive -o $ZIPFILE HEAD
-          
-          # Upload to S3
-          aws s3 cp $ZIPFILE s3://$AWS_BUCKET/$ZIPFILE
-          
-          # Create application version
-          aws elasticbeanstalk create-application-version \
-            --application-name test \
-            --version-label "$VERSION_LABEL" \
-            --source-bundle S3Bucket="$AWS_BUCKET",S3Key="$ZIPFILE" \
-            --region $AWS_REGION
-          
-          # Wait for version to become "PROCESSED"
-          for i in {1..10}; do
-            STATUS=$(aws elasticbeanstalk describe-application-versions \
-              --application-name test \
-              --version-labels "$VERSION_LABEL" \
-              --query "ApplicationVersions[0].Status" \
-              --output text \
-              --region $AWS_REGION)
-          
-            echo "Version status: $STATUS"
-          
-            if [[ "$STATUS" == "PROCESSED" ]]; then
-              echo "Version is ready to deploy"
-              break
-            fi
-          
-            if [[ $i -eq 10 ]]; then
-              echo "Timed out waiting for version to be processed"
-              exit 1
-            fi
-          
-            sleep 5
-          done
-          
-          # Deploy the version
-          aws elasticbeanstalk update-environment \
-            --environment-name b2-vue-env2 \
-            --version-label "$VERSION_LABEL" \
-            --region $AWS_REGION
-          
-          
+          eb init test -r ${{ secrets.AWS_REGION }} -p "Node.js 22 running on 64bit Amazon Linux 2023" --keyname aws-eb
+          eb use b2-vue-envtestgithub
+          eb setenv MONGODB_URI="${MONGODB_URI}" SUPER_ADMIN_EMAIL="${SUPER_ADMIN_EMAIL}"
+          eb deploy --staged --verbose
+
+      - name: Check deployment
+        run: |
+          eb status | grep "CNAME"
+          eb open
+          eb status
+          eb logs
