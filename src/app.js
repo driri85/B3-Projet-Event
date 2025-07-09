@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const UserDAO = require('./dao/dao_login_mock');
 const jwt = require('jsonwebtoken');
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 8080;
 const dao = new UserDAO();
 const { SECRET_JWT } = require('./core/config');
 const cors = require('cors');
@@ -162,7 +162,6 @@ const swaggerSpec = require('./swagger');                  // Import your Swagge
 // Serve Swagger docs at http://localhost:3000/api-docs
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 
-
-app.listen(8080, '0.0.0.0', () => {
-    console.log("Le serveur a démarré");
+app.listen(port, '0.0.0.0', () => {
+  console.log(`Le serveur a démarré sur le port ${port}`);
 });
