@@ -1,0 +1,35 @@
+name: CI/CD Elastic Beanstalk
+on:
+  push:
+    branches: [ main ]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+      uses: actions/checkout@v3
+
+      - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16'
+
+      - name: Install deps & build
+      run: |
+        npm ci
+        npm run build # ⟵ génère dist/ à jour
+      - name: Install EB CLI
+        run: |
+          python3 -m pip install --upgrade --user awsebcli
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+      - name: Configure AWS
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+      - name: Init & Deploy
+        run: |
+          eb init test -r $AWS_REGION -p "Node.js 22 running on 64bit Amazon Linux 2023" --keyname aws-eb
+          eb use b2-vue-env
+          eb deploy --staged --verbose

@@ -1,2 +1,6 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+<<<<<<< HEAD
+=======
+
+>>>>>>> d632598 (Ajout du workflow CI/CD pour EB)
