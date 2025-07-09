@@ -147,6 +147,11 @@ app.get('/me2', authenticateToken, async (req, res) => {
     res.json(buildAPIResponse("200", "Utilisateur trouvé", { user: { id : user.id,email: user.email, admin: user.admin } }));
 });
 
+
+app.get('/ping', (req, res) => {
+  res.json({ message: 'pong' });
+});
+
 const connectDB = require('./core/mongodb'); // fichier de connexion
 connectDB(); // Connecte à MongoDB
 
