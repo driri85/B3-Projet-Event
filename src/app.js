@@ -8,26 +8,26 @@ const port = 3000;
 const dao = new UserDAO();
 const { SECRET_JWT } = require('./core/config');
 const cors = require('cors');
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://b2-vue-envtestgithub.eba-22rdyd8k.us-west-2.elasticbeanstalk.com',
+  'https://b2-vue-envtestgithub.eba-22rdyd8k.us-west-2.elasticbeanstalk.com'
+];
 app.use(cors({
   origin: function (origin, callback) {
-    const allowedOrigins = [
-      'http://localhost:5173',
-      'http://vue-frontend-env.eba-d8cnyixz.us-west-2.elasticbeanstalk.com',
-      'https://vue-frontend-env.eba-d8cnyixz.us-west-2.elasticbeanstalk.com'
-    ];
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
+      console.log('Blocked by CORS:', origin);
       callback(new Error('Not allowed by CORS'));
     }
   },
-  credentials: true
+  credentials: true,
 }));
 app.use((req, res, next) => {
-  console.log('Request Origin:', req.headers.origin);
+  console.log('Incoming origin:', req.headers.origin);
   next();
 });
-
 app.use(bodyParser.json());
 const authRouter = require('./auth/auth-routes');
 app.use('/login', authRouter);
