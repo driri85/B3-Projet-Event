@@ -40,25 +40,49 @@ jobs:
           # Define version label
           VERSION_LABEL="app-$(date +%s)"
           ZIPFILE="${VERSION_LABEL}.zip"
-      
-          # Package the app
+          AWS_BUCKET="elasticbeanstalk-${AWS_REGION}-${AWS_ACCOUNT_ID}"
+          
+          # Create archive
           git archive -o $ZIPFILE HEAD
-      
-          # Upload to S3 (ensure your Elastic Beanstalk bucket name is correct)
-          aws s3 cp $ZIPFILE s3://elasticbeanstalk-${{ secrets.AWS_REGION }}-${{ secrets.AWS_ACCOUNT_ID }}/$ZIPFILE
-      
-          # Create the app version
+          
+          # Upload to S3
+          aws s3 cp $ZIPFILE s3://$AWS_BUCKET/$ZIPFILE
+          
+          # Create application version
           aws elasticbeanstalk create-application-version \
             --application-name test \
             --version-label "$VERSION_LABEL" \
-            --source-bundle S3Bucket="elasticbeanstalk-${{ secrets.AWS_REGION }}-${{ secrets.AWS_ACCOUNT_ID }}",S3Key="$ZIPFILE" \
-            --region ${{ secrets.AWS_REGION }}
-      
-          # Wait for version to be available (you can optionally loop-check here)
-      
-          # Deploy to environment
+            --source-bundle S3Bucket="$AWS_BUCKET",S3Key="$ZIPFILE" \
+            --region $AWS_REGION
+          
+          # Wait for version to become "PROCESSED"
+          for i in {1..10}; do
+            STATUS=$(aws elasticbeanstalk describe-application-versions \
+              --application-name test \
+              --version-labels "$VERSION_LABEL" \
+              --query "ApplicationVersions[0].Status" \
+              --output text \
+              --region $AWS_REGION)
+          
+            echo "Version status: $STATUS"
+          
+            if [[ "$STATUS" == "PROCESSED" ]]; then
+              echo "Version is ready to deploy"
+              break
+            fi
+          
+            if [[ $i -eq 10 ]]; then
+              echo "Timed out waiting for version to be processed"
+              exit 1
+            fi
+          
+            sleep 5
+          done
+          
+          # Deploy the version
           aws elasticbeanstalk update-environment \
             --environment-name b2-vue-env2 \
             --version-label "$VERSION_LABEL" \
-            --region ${{ secrets.AWS_REGION }}
-
+            --region $AWS_REGION
+          
+          
