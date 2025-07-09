@@ -42,7 +42,23 @@ jobs:
       - name: Set environment to use
         run: eb use b2-vue-env2
 
-      - name: Deploy to Elastic Beanstalk
+      - name: Deploy to Elastic Beanstalk with wait
         run: |
-          eb deploy --timeout 60 --verbose
+          VERSION_LABEL=$(git rev-parse --short HEAD)-$GITHUB_RUN_ID
+          ZIP_NAME="app-$VERSION_LABEL"
+          
+          echo "Creating version label: $ZIP_NAME"
+          
+          eb init test -r ${{ secrets.AWS_REGION }} -p "Node.js 22 running on 64bit Amazon Linux 2023" --keyname aws-eb
+          eb use b2-vue-env2
+      
+          echo "Creating application version archive..."
+          eb create --label "$ZIP_NAME" || true
+      
+          echo "Uploading and waiting for version to register..."
+          eb deploy --label "$ZIP_NAME" --verbose --timeout 60 || {
+            echo "Waiting for EB to register version..."
+            sleep 10
+            eb deploy --label "$ZIP_NAME" --verbose --timeout 60
+          }
           eb status
