@@ -10,6 +10,7 @@ jobs:
     env:
       MONGODB_URI: ${{ secrets.MONGODB_URI }}
       SUPER_ADMIN_EMAIL: ${{ secrets.SUPER_ADMIN_EMAIL }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -19,9 +20,8 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install dependencies & build
-        run: |
-          npm ci
+      - name: Install dependencies
+        run: npm ci
 
       - name: Install EB CLI
         run: |
@@ -35,12 +35,14 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Init & Deploy to Elastic Beanstalk
+      - name: Initialize EB CLI
         run: |
           eb init test -r ${{ secrets.AWS_REGION }} -p "Node.js 22 running on 64bit Amazon Linux 2023" --keyname aws-eb
-          eb use b2-vue-env2
-          eb deploy --staged --verbose
-          eb status | grep "CNAME"
-          eb open
+
+      - name: Set environment to use
+        run: eb use b2-vue-env2
+
+      - name: Deploy to Elastic Beanstalk
+        run: |
+          eb deploy --timeout 60 --verbose
           eb status
-          eb logs
