@@ -35,12 +35,30 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Init & Deploy to Elastic Beanstalk
+      - name: Package and Deploy to Elastic Beanstalk
         run: |
-          eb init test -r ${{ secrets.AWS_REGION }} -p "Node.js 22 running on 64bit Amazon Linux 2023" --keyname aws-eb
-          eb use b2-vue-env2
-          eb deploy --staged --verbose || (echo "Retrying in 20 seconds..." && sleep 20 && eb deploy --staged --verbose)
-          sleep 20
-          eb status | grep "CNAME"
-          eb open
-          eb logs
+          # Define version label
+          VERSION_LABEL="app-$(date +%s)"
+          ZIPFILE="${VERSION_LABEL}.zip"
+      
+          # Package the app
+          git archive -o $ZIPFILE HEAD
+      
+          # Upload to S3 (ensure your Elastic Beanstalk bucket name is correct)
+          aws s3 cp $ZIPFILE s3://elasticbeanstalk-${{ secrets.AWS_REGION }}-${{ secrets.AWS_ACCOUNT_ID }}/$ZIPFILE
+      
+          # Create the app version
+          aws elasticbeanstalk create-application-version \
+            --application-name test \
+            --version-label "$VERSION_LABEL" \
+            --source-bundle S3Bucket="elasticbeanstalk-${{ secrets.AWS_REGION }}-${{ secrets.AWS_ACCOUNT_ID }}",S3Key="$ZIPFILE" \
+            --region ${{ secrets.AWS_REGION }}
+      
+          # Wait for version to be available (you can optionally loop-check here)
+      
+          # Deploy to environment
+          aws elasticbeanstalk update-environment \
+            --environment-name b2-vue-env2 \
+            --version-label "$VERSION_LABEL" \
+            --region ${{ secrets.AWS_REGION }}
+
