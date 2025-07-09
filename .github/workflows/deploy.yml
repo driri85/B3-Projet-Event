@@ -42,23 +42,50 @@ jobs:
       - name: Set environment to use
         run: eb use b2-vue-env2
 
-      - name: Deploy to Elastic Beanstalk with wait
+      - name: Deploy to Elastic Beanstalk with version check
+        env:
+          VERSION_LABEL: app-${{ github.run_id }}-${{ github.run_number }}
         run: |
-          VERSION_LABEL=$(git rev-parse --short HEAD)-$GITHUB_RUN_ID
-          ZIP_NAME="app-$VERSION_LABEL"
-          
-          echo "Creating version label: $ZIP_NAME"
-          
+          # Setup
           eb init test -r ${{ secrets.AWS_REGION }} -p "Node.js 22 running on 64bit Amazon Linux 2023" --keyname aws-eb
           eb use b2-vue-env2
       
-          echo "Creating application version archive..."
-          eb create --label "$ZIP_NAME" || true
+          # Zip & Upload the version manually
+          ZIP_NAME="${VERSION_LABEL}.zip"
+          echo "Creating archive: $ZIP_NAME"
+          zip -r $ZIP_NAME . -x ".git/*" "node_modules/*" "*.zip"
       
-          echo "Uploading and waiting for version to register..."
-          eb deploy --label "$ZIP_NAME" --verbose --timeout 60 || {
-            echo "Waiting for EB to register version..."
-            sleep 10
-            eb deploy --label "$ZIP_NAME" --verbose --timeout 60
-          }
-          eb status
+          echo "Creating new application version: $VERSION_LABEL"
+          aws elasticbeanstalk create-application-version \
+            --application-name test \
+            --version-label "$VERSION_LABEL" \
+            --source-bundle S3Bucket=elasticbeanstalk-${{ secrets.AWS_REGION }}-${{ secrets.AWS_ACCOUNT_ID }},S3Key=test/$ZIP_NAME \
+            --auto-create-application
+      
+          # Wait for the version to be available
+          echo "Waiting for Elastic Beanstalk to recognize version..."
+          for i in {1..15}; do
+            FOUND=$(aws elasticbeanstalk describe-application-versions \
+              --application-name test \
+              --version-labels "$VERSION_LABEL" \
+              --query 'ApplicationVersions[0].VersionLabel' \
+              --output text)
+      
+            if [[ "$FOUND" == "$VERSION_LABEL" ]]; then
+              echo "Version $VERSION_LABEL is ready."
+              break
+            else
+              echo "Waiting for version $VERSION_LABEL to register... ($i/15)"
+              sleep 5
+            fi
+          done
+      
+          if [[ "$FOUND" != "$VERSION_LABEL" ]]; then
+            echo "ERROR: Version $VERSION_LABEL was not registered in time."
+            exit 1
+          fi
+      
+          # Deploy the version
+          echo "Deploying $VERSION_LABEL"
+          eb deploy --label "$VERSION_LABEL" --verbose
+      
