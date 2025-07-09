@@ -6,6 +6,7 @@
   "scripts": {
     "test": "jest",
     "start": "node src/app.js",
+    "main": "src/app.js",
     "docs": "jsdoc -c jsdoc.json"
   },
   "repository": {
