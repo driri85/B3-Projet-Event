@@ -2,11 +2,10 @@
   "name": "b3-projet-event-a-r",
   "version": "1.0.0",
   "description": "",
-  "main": "app.js",
+  "main": "src/app.js",
   "scripts": {
     "test": "jest",
     "start": "node src/app.js",
-    "main": "src/app.js",
     "docs": "jsdoc -c jsdoc.json"
   },
   "repository": {
