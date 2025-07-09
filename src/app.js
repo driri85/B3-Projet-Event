@@ -9,8 +9,12 @@ const dao = new UserDAO();
 const { SECRET_JWT } = require('./core/config');
 const cors = require('cors');
 app.use(cors({
-    origin: 'http://vue-frontend-env.eba-d8cnyixz.us-west-2.elasticbeanstalk.com:5173', // autorise VITE
-    credentials: true                // autorise les cookies/headers d'auth
+  origin: [
+    'http://localhost:5173', // for Vite dev
+    'http://vue-frontend-env.eba-d8cnyixz.us-west-2.elasticbeanstalk.com', // production
+    'https://vue-frontend-env.eba-d8cnyixz.us-west-2.elasticbeanstalk.com' // in case of HTTPS
+  ],
+  credentials: true
 }));
 app.use(bodyParser.json());
 const authRouter = require('./auth/auth-routes');
