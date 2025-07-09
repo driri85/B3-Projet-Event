@@ -9,11 +9,18 @@ const dao = new UserDAO();
 const { SECRET_JWT } = require('./core/config');
 const cors = require('cors');
 app.use(cors({
-  origin: [
-    'http://localhost:5173', // for Vite dev
-    'http://vue-frontend-env.eba-d8cnyixz.us-west-2.elasticbeanstalk.com', // production
-    'https://vue-frontend-env.eba-d8cnyixz.us-west-2.elasticbeanstalk.com' // in case of HTTPS
-  ],
+  origin: function (origin, callback) {
+    const allowedOrigins = [
+      'http://localhost:5173',
+      'http://vue-frontend-env.eba-d8cnyixz.us-west-2.elasticbeanstalk.com',
+      'https://vue-frontend-env.eba-d8cnyixz.us-west-2.elasticbeanstalk.com'
+    ];
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
 app.use(bodyParser.json());
