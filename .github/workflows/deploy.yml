@@ -38,7 +38,7 @@ jobs:
       - name: Init & Deploy to Elastic Beanstalk
         run: |
           eb init test -r ${{ secrets.AWS_REGION }} -p "Node.js 22 running on 64bit Amazon Linux 2023" --keyname aws-eb
-          eb use b2-vue-envtestgithub
+          eb use b2-vue-env2
           eb deploy --staged --verbose
           eb status | grep "CNAME"
           eb open
