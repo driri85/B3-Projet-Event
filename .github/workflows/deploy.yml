@@ -19,8 +19,9 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Install dependencies & build
+        run: |
+          npm ci
 
       - name: Install EB CLI
         run: |
@@ -34,27 +35,12 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Initialize Elastic Beanstalk
+      - name: Init & Deploy to Elastic Beanstalk
         run: |
-          eb init test -r ${{ secrets.AWS_REGION }} -p "Node.js 22 running on 64bit Amazon Linux 2023" --keyname aws-eb || true
-
-      - name: Terminate previous environment
-        run: |
-          eb terminate b2-vue-envtestgithub --force || true
-          echo "Waiting 2 minutes for termination to complete..."
-          sleep 120
-
-      - name: Create environment from scratch
-        run: |
-          eb create b2-vue-envtestgithub --single --timeout 15
-
-      - name: Create .env file
-        run: |
-          echo "MONGODB_URI=${MONGODB_URI}" > .env
-          echo "SUPER_ADMIN_EMAIL=${SUPER_ADMIN_EMAIL}" >> .env
-          cat .env
-
-      - name: Deploy to Elastic Beanstalk
-        run: |
-          eb use b2-vue-env2
+          eb init test -r ${{ secrets.AWS_REGION }} -p "Node.js 22 running on 64bit Amazon Linux 2023" --keyname aws-eb
+          eb use b2-vue-envtestgithub
           eb deploy --staged --verbose
+          eb status | grep "CNAME"
+          eb open
+          eb status
+          eb logs
