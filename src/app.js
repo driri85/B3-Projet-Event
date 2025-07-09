@@ -23,6 +23,11 @@ app.use(cors({
   },
   credentials: true
 }));
+app.use((req, res, next) => {
+  console.log('Request Origin:', req.headers.origin);
+  next();
+});
+
 app.use(bodyParser.json());
 const authRouter = require('./auth/auth-routes');
 app.use('/login', authRouter);
