@@ -9,7 +9,7 @@ const dao = new UserDAO();
 const { SECRET_JWT } = require('./core/config');
 const cors = require('cors');
 app.use(cors({
-    origin: 'http://monvuejsenv.eba-qubnz8ha.us-west-2.elasticbeanstalk.com', // autorise VITE
+    origin: 'http://vue-frontend-env.eba-d8cnyixz.us-west-2.elasticbeanstalk.com', // autorise VITE
     credentials: true                // autorise les cookies/headers d'auth
 }));
 app.use(bodyParser.json());
