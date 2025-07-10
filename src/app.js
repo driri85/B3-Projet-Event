@@ -12,7 +12,6 @@ app.use(cors({
     origin: 'http://vue-frontend-env.eba-d8cnyixz.us-west-2.elasticbeanstalk.com', // autorise VITE
     credentials: true                // autorise les cookies/headers d'auth
 }));
-app.options('*', cors()); // Preflight for all routes
 app.use(bodyParser.json());
 const authRouter = require('./auth/auth-routes');
 app.use('/login', authRouter);
