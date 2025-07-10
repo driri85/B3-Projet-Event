@@ -2,7 +2,7 @@
   "name": "b3-projet-event-a-r",
   "version": "1.0.0",
   "description": "",
-  "main": "src/app.js",
+  "main": "app.js",
   "scripts": {
     "test": "jest",
     "start": "node src/app.js",
