@@ -65,7 +65,6 @@ const { buildAPIResponse } = require('../core/helpers-library');
  *                   type: object
  *                   nullable: true
  */
-app.options('*', cors()); // 👈 must be before any routes
 router.post('/', async (req, res) => {
     const loggeduser = await user.findOne({ email: req.body.email, password: req.body.password });
         if (!loggeduser) {
