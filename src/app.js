@@ -8,10 +8,24 @@ const PORT = process.env.PORT || 8080;
 const dao = new UserDAO();
 const { SECRET_JWT } = require('./core/config');
 const cors = require('cors');
+
+const allowedOrigins = [
+  'https://vue-frontend-env.eba-d8cnyixz.us-west-2.elasticbeanstalk.com'
+];
+
 app.use(cors({
-    origin: 'http://vue-frontend-env.eba-d8cnyixz.us-west-2.elasticbeanstalk.com', // autorise VITE
-    credentials: true                // autorise les cookies/headers d'auth
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('CORS not allowed'));
+    }
+  },
+  credentials: true
 }));
+
+app.options('*', cors()); // Preflight for all routes
+
 app.use(bodyParser.json());
 const authRouter = require('./auth/auth-routes');
 app.use('/login', authRouter);
