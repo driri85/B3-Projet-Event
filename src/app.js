@@ -10,7 +10,7 @@ const { SECRET_JWT } = require('./core/config');
 const cors = require('cors');
 
 const allowedOrigins = [
-  'http://arsdv.site', // ✅ ADD THIS
+  'http://arsdv.site',
   'https://vue-frontend-env.eba-d8cnyixz.us-west-2.elasticbeanstalk.com'
 ];
 
