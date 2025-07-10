@@ -30,5 +30,5 @@ jobs:
       - name: Init & Deploy
         run: |
           eb init test -r $AWS_REGION -p "Node.js 22 running on 64bit Amazon Linux 2023" --keyname aws-eb
-          eb use b2-vue-env
+          eb use b2-vue-envtestgithub
           eb deploy --staged --verbose
