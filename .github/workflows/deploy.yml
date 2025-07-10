@@ -17,7 +17,6 @@ jobs:
       - name: Install deps & build
         run: |
           npm ci
-          npm run build # ⟵ génère dist/ à jour
       - name: Install EB CLI
         run: |
           python3 -m pip install --upgrade --user awsebcli
