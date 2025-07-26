@@ -76,6 +76,10 @@ app.use('/events', authenticateToken, eventRouter);
  *                   type: string
  *                   example: Utilisateur non trouvé
  */
+app.get('/', (req, res) => {
+  res.send('Hello World!');
+});
+
 app.get('/me', authenticateToken, async (req, res) => {
     const user = await dao.findById(req.user.id);
     if (!user) return res.status(404).json({ message: 'Utilisateur non trouvé' });
