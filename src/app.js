@@ -11,8 +11,8 @@ const cors = require('cors');
 
 const allowedOrigins = [
   'https://arsdv.site',
-  'https://B3-project-event.arsdv.site',
-  'http://localhost:8081',
+  'https://frontend.arsdv.site',
+  'http://192.168.1.50:8081',
 ];
 
 app.use(cors({
