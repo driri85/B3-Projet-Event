@@ -15,21 +15,35 @@ const allowedOrigins = [
   'http://192.168.1.50:8081',
 ];
 
+// ✅ Always before any routes or body parsers
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      callback(new Error('CORS not allowed: ' + origin));
+      console.warn('CORS blocked origin:', origin);
+      callback(new Error('CORS not allowed'));
     }
   },
-  credentials: true
+  credentials: true,
 }));
 
-//app.use(cors({
-//    origin: 'http://vue-frontend-env.eba-d8cnyixz.us-west-2.elasticbeanstalk.com', // autorise VITE
-//    credentials: true                // autorise les cookies/headers d'auth
-//}));
+app.options('*', cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('CORS not allowed'));
+    }
+  },
+  credentials: true,
+}));
+
+
+app.use(bodyParser.json());
+
+
+
 app.use(bodyParser.json());
 const authRouter = require('./auth/auth-routes');
 app.use('/login', authRouter);
