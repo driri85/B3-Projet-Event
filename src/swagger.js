@@ -1,26 +1,25 @@
 // swagger.js
 const swaggerJSDoc = require('swagger-jsdoc');
-const path = require('path'); //  Add path module
 
 // Swagger configuration options
 const options = {
   definition: {
-    openapi: '3.0.0',
+    openapi: '3.0.0', // Use OpenAPI 3.0 specification
     info: {
-      title: 'Event API',
-      version: '1.0.0',
-      description: 'API documentation for the Event project'
+      title: 'Event API', // API title
+      version: '1.0.0',   // Version of the API
+      description: 'API documentation for the Event project' // Short description
     },
     servers: [
       {
-        url: 'http://localhost:3000/api-docs',
-        description: 'Production server'
+        url: 'http://localhost:3000', // Base URL of your API
+        description: 'Local server'
       }
     ],
     components: {
       securitySchemes: {
         bearerAuth: {
-          type: 'http',               //  This should be "http" not "https"
+          type: 'http',
           scheme: 'bearer',
           bearerFormat: 'JWT'
         }
@@ -28,12 +27,7 @@ const options = {
     },
     security: [{ bearerAuth: [] }]
   },
-  apis: [
-    path.resolve(__dirname, 'src/app.js'),
-    path.resolve(__dirname, 'src/user/*.js'),
-    path.resolve(__dirname, 'src/event/*.js'),
-    path.resolve(__dirname, 'src/auth/*.js'),
-  ],
+  apis: ['./src/app.js','./src/user/*.js', './src/event/*.js', './src/auth/*.js'], // Files containing Swagger comments
 };
 
 const swaggerSpec = swaggerJSDoc(options);

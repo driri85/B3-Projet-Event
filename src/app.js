@@ -11,31 +11,19 @@ const cors = require('cors');
 
 const allowedOrigins = [
   'https://frontend.arsdv.site',
-  'http://192.168.1.50:8081'
+  'http://192.168.1.50:8081',
 ];
 
-const corsOptions = {
+app.use(cors({
   origin: function (origin, callback) {
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
     } else {
-      console.warn(' CORS blocked:', origin);
-      return callback(null, false);
+      callback(new Error('CORS not allowed: ' + origin));
     }
   },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-};
-
-
-app.use(cors(corsOptions));
-app.options('*', cors(corsOptions)); // handle preflight globally
-app.use(bodyParser.json());
-
-
-
+  credentials: true
+}));
 app.use(bodyParser.json());
 const authRouter = require('./auth/auth-routes');
 app.use('/login', authRouter);
@@ -44,11 +32,6 @@ app.use('/users', userRouter);
 const eventRouter = require('./event/event-routes');
 const authenticateToken = require('./middleware/authenticateToken');
 app.use('/events', authenticateToken, eventRouter);
-
-app.get('/', (req, res) => {
-  res.send('Hello World!');
-});
-
 
 // Route /me directe (protégée)
 /**
@@ -87,7 +70,6 @@ app.get('/', (req, res) => {
  *                   type: string
  *                   example: Utilisateur non trouvé
  */
-
 app.get('/me', authenticateToken, async (req, res) => {
     const user = await dao.findById(req.user.id);
     if (!user) return res.status(404).json({ message: 'Utilisateur non trouvé' });
@@ -172,6 +154,6 @@ const swaggerSpec = require('./swagger');                  // Import your Swagge
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server running on port ${PORT}`);
+app.listen(8080, '0.0.0.0', () => {
+    console.log("Le serveur a démarré");
 });
