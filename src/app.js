@@ -10,9 +10,8 @@ const { SECRET_JWT } = require('./core/config');
 const cors = require('cors');
 
 const allowedOrigins = [
-  'https://arsdv.site',
   'https://frontend.arsdv.site',
-  'http://192.168.1.50:8081',
+  'http://192.168.1.50:8081'
 ];
 
 const corsOptions = {
@@ -21,20 +20,19 @@ const corsOptions = {
     if (allowedOrigins.includes(origin)) {
       return callback(null, true);
     } else {
-      console.warn('🚫 CORS blocked:', origin);
+      console.warn(' CORS blocked:', origin);
       return callback(null, false);
     }
   },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // ✅ allow all HTTP methods you use
-  allowedHeaders: ['Content-Type', 'Authorization'],     // ✅ allow Authorization header
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 };
 
 
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions)); // handle preflight globally
 app.use(bodyParser.json());
-
 
 
 
@@ -46,6 +44,11 @@ app.use('/users', userRouter);
 const eventRouter = require('./event/event-routes');
 const authenticateToken = require('./middleware/authenticateToken');
 app.use('/events', authenticateToken, eventRouter);
+
+app.get('/', (req, res) => {
+  res.send('Hello World!');
+});
+
 
 // Route /me directe (protégée)
 /**
@@ -84,9 +87,6 @@ app.use('/events', authenticateToken, eventRouter);
  *                   type: string
  *                   example: Utilisateur non trouvé
  */
-app.get('/', (req, res) => {
-  res.send('Hello World!');
-});
 
 app.get('/me', authenticateToken, async (req, res) => {
     const user = await dao.findById(req.user.id);
