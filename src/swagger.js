@@ -13,7 +13,7 @@ const options = {
     },
     servers: [
       {
-        url: 'https://backend.arsdv.site',
+        url: 'http://localhost:3000/api-docs',
         description: 'Production server'
       }
     ],
