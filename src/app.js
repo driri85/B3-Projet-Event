@@ -15,32 +15,24 @@ const allowedOrigins = [
   'http://192.168.1.50:8081',
 ];
 
-// ✅ Always before any routes or body parsers
-app.use(cors({
+const corsOptions = {
   origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
+    if (!origin) return callback(null, true); // allow curl, Postman, etc.
+
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
     } else {
-      console.warn('CORS blocked origin:', origin);
-      callback(new Error('CORS not allowed'));
+      console.warn('🚫 CORS blocked:', origin);
+      return callback(null, false); // silently fail
     }
   },
   credentials: true,
-}));
+};
 
-app.options('*', cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('CORS not allowed'));
-    }
-  },
-  credentials: true,
-}));
-
-
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // handle preflight globally
 app.use(bodyParser.json());
+
 
 
 
