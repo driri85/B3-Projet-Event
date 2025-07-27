@@ -17,17 +17,19 @@ const allowedOrigins = [
 
 const corsOptions = {
   origin: function (origin, callback) {
-    if (!origin) return callback(null, true); // allow curl, Postman, etc.
-
+    if (!origin) return callback(null, true);
     if (allowedOrigins.includes(origin)) {
       return callback(null, true);
     } else {
       console.warn('🚫 CORS blocked:', origin);
-      return callback(null, false); // silently fail
+      return callback(null, false);
     }
   },
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // ✅ allow all HTTP methods you use
+  allowedHeaders: ['Content-Type', 'Authorization'],     // ✅ allow Authorization header
 };
+
 
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions)); // handle preflight globally
