@@ -154,6 +154,6 @@ const swaggerSpec = require('./swagger');                  // Import your Swagge
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 
 
-app.listen(8080, '0.0.0.0', () => {
+app.listen(PORT, '0.0.0.0', () => {
     console.log("Le serveur a démarré");
 });
