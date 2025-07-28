@@ -33,6 +33,11 @@ const eventRouter = require('./event/event-routes');
 const authenticateToken = require('./middleware/authenticateToken');
 app.use('/events', authenticateToken, eventRouter);
 
+app.get('/', (req, res) => {
+    res.send('Hello world !');
+});
+
+
 // Route /me directe (protégée)
 /**
  * @swagger
