@@ -147,8 +147,9 @@ app.get('/me2', authenticateToken, async (req, res) => {
     res.json(buildAPIResponse("200", "Utilisateur trouvé", { user: { id : user.id,email: user.email, admin: user.admin } }));
 });
 
-const connectDB = require('./core/postgres'); // fichier de connexion
-connectDB(); // Connecte à MongoDB
+const { connectDB } = require('./core/postgres'); // fichier de connexion
+connectDB(); // Connecte à PostgreSQL
+
 
 const { sequelize } = require('./core/postgres');
 const User = require('./models/user');
