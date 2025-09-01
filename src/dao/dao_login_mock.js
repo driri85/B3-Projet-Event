@@ -1,30 +1,33 @@
-const user = require('../models/user');
+const User = require('../models/user');
 
-class DAOMongo {
-    async findAll() {
-        return await user.find();
-    }
+class UserDAO {
+  async findAll() {
+    return await User.findAll();
+  }
 
-    async findById(id) {
-        return await user.findById(id);
-    }
+  async findById(id) {
+    return await User.findByPk(id);
+  }
 
-    async findByEmail(email) {
-        return await user.findOne({ email });
-    }
+  async findByEmail(email) {
+    return await User.findOne({ where: { email } });
+  }
 
-    async create(data) {
-        const newUser = new user(data);
-        return await newUser.save();
-    }
+  async create(data) {
+    return await User.create(data);
+  }
 
-    async update(id, data) {
-        return await user.findByIdAndUpdate(id, data, { new: true });
-    }
+  async update(id, data) {
+    const user = await User.findByPk(id);
+    if (!user) return null;
+    return await user.update(data);
+  }
 
-    async delete(id) {
-        return await user.findByIdAndDelete(id);
-    }
+  async delete(id) {
+    const user = await User.findByPk(id);
+    if (!user) return null;
+    return await user.destroy();
+  }
 }
 
-module.exports = DAOMongo;
+module.exports = UserDAO;

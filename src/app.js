@@ -6,7 +6,6 @@ const jwt = require('jsonwebtoken');
 const app = express();
 const PORT = process.env.PORT || 8080;
 const dao = new UserDAO();
-const { SECRET_JWT } = require('./core/config');
 const cors = require('cors');
 
 const allowedOrigins = [
@@ -148,8 +147,17 @@ app.get('/me2', authenticateToken, async (req, res) => {
     res.json(buildAPIResponse("200", "Utilisateur trouvé", { user: { id : user.id,email: user.email, admin: user.admin } }));
 });
 
-const connectDB = require('./core/mongodb'); // fichier de connexion
+const connectDB = require('./core/postgres'); // fichier de connexion
 connectDB(); // Connecte à MongoDB
+
+const { sequelize } = require('./core/postgres');
+const User = require('./models/user');
+const Event = require('./models/event');
+
+(async () => {
+  await sequelize.sync({ alter: true }); // creates/updates tables automatically
+})();
+
 
 // SWAGGER CONFIG
 const swaggerUI = require('swagger-ui-express');           // Import Swagger UI middleware

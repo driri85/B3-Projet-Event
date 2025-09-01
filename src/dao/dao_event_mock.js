@@ -1,69 +1,56 @@
 const Event = require('../models/event');
+const User = require('../models/user');
 
-class DAOMongo {
+class EventDAO {
   async findAll() {
-    return await Event.find();
+    return await Event.findAll({ include: User });
   }
 
   async findById(id) {
-    return await Event.findById(id);
-  }
-
-  async findByEmail(email) {
-    return await Event.findOne({ email });
+    return await Event.findByPk(id, { include: User });
   }
 
   async create(data) {
-    const newEvent = new Event(data);
-    return await newEvent.save();
+    return await Event.create(data);
   }
 
   async update(id, data) {
-    return await Event.findByIdAndUpdate(id, data, { new: true });
+    const event = await Event.findByPk(id);
+    if (!event) return null;
+    return await event.update(data);
   }
 
   async delete(id) {
-    return await Event.findByIdAndDelete(id);
+    const event = await Event.findByPk(id);
+    if (!event) return null;
+    return await event.destroy();
   }
 
   async registerUser(eventId, userId) {
-    const event = await Event.findById(eventId);
-    if (!event) {
-      throw new Error("Événement introuvable");
+    const event = await Event.findByPk(eventId);
+    const user = await User.findByPk(userId);
+    if (!event || !user) throw new Error("Not found");
+
+    const participants = await event.getUsers();
+    if (participants.length >= event.capacity) {
+      throw new Error("Capacité maximale atteinte");
     }
-
-    const userIdStr = userId.toString();
-    const isAlreadyRegistered = event.participants.some(p => p.toString() === userIdStr);
-
-    if (isAlreadyRegistered) {
+    if (participants.some(u => u.id === user.id)) {
       throw new Error("Utilisateur déjà inscrit");
     }
 
-    if (event.participants.length >= event.capacity) {
-      throw new Error("Capacité maximale atteinte");
-    }
-
-    event.participants.push(userId);
-    return await event.save();
+    await event.addUser(user);
+    return event;
   }
 
   async unregisterUser(eventId, userId) {
-    const event = await Event.findById(eventId);
-    if (!event) {
-      throw new Error("Événement introuvable");
-    }
+    const event = await Event.findByPk(eventId);
+    const user = await User.findByPk(userId);
+    if (!event || !user) throw new Error("Not found");
 
-    const userIdStr = userId.toString();
-    const index = event.participants.findIndex(p => p.toString() === userIdStr);
-
-    if (index === -1) {
-      throw new Error("Utilisateur non inscrit");
-    }
-
-    event.participants.splice(index, 1);
-    return await event.save();
+    await event.removeUser(user);
+    return event;
   }
-
 }
 
-module.exports = DAOMongo;
+module.exports = EventDAO;
