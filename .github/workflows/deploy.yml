@@ -13,7 +13,13 @@ jobs:
       CONTAINER_NAME: node-backend
       IMAGE_NAME: node-backend
       PORT: 3000
-      MONGODB_URI: ${{ secrets.MONGODB_URI }}
+
+      # Postgres connection (secrets should be configured in GitHub repo settings)
+      PG_DB: ${{ secrets.PG_DB }}
+      PG_USER: ${{ secrets.PG_USER }}
+      PG_PASSWORD: ${{ secrets.PG_PASSWORD }}
+      PG_HOST: ${{ secrets.PG_HOST }}   # likely "postgres" if using docker-compose
+      PG_PORT: ${{ secrets.PG_PORT }}
       SUPER_ADMIN_EMAIL: ${{ secrets.SUPER_ADMIN_EMAIL }}
 
     steps:
@@ -34,6 +40,10 @@ jobs:
           --name $CONTAINER_NAME \
           --restart unless-stopped \
           -p $PORT:$PORT \
-          -e MONGODB_URI="$MONGODB_URI" \
+          -e PG_DB="$PG_DB" \
+          -e PG_USER="$PG_USER" \
+          -e PG_PASSWORD="$PG_PASSWORD" \
+          -e PG_HOST="$PG_HOST" \
+          -e PG_PORT="$PG_PORT" \
           -e SUPER_ADMIN_EMAIL="$SUPER_ADMIN_EMAIL" \
           $IMAGE_NAME
