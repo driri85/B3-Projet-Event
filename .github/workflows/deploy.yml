@@ -15,6 +15,7 @@ jobs:
       PORT: 3000
       MONGODB_URI: ${{ secrets.MONGODB_URI }}
       SUPER_ADMIN_EMAIL: ${{ secrets.SUPER_ADMIN_EMAIL }}
+      JWT: ${{secrets.JWT}}
 
     steps:
     - name: Checkout code
