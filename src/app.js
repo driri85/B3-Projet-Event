@@ -6,7 +6,6 @@ const jwt = require('jsonwebtoken');
 const app = express();
 const PORT = process.env.PORT || 8080;
 const dao = new UserDAO();
-const { SECRET_JWT } = require('./core/config');
 const cors = require('cors');
 
 const allowedOrigins = [
