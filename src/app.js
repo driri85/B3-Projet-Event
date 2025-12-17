@@ -10,7 +10,7 @@ const cors = require('cors');
 
 const allowedOrigins = [
   'https://frontend.arsdv.site',
-  'http://192.168.1.50:8081',
+  'http://192.168.1.170:8081',
 ];
 
 app.use(cors({
