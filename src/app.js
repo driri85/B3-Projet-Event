@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const UserDAO = require('./dao/dao_login_mock');
 const jwt = require('jsonwebtoken');
 const app = express();
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 3000;
 const dao = new UserDAO();
 const cors = require('cors');
 
@@ -154,7 +154,7 @@ connectDB(); // Connecte à MongoDB
 const swaggerUI = require('swagger-ui-express');           // Import Swagger UI middleware
 const swaggerSpec = require('./swagger');                  // Import your Swagger config
 
-// Serve Swagger docs at http://localhost:3000/api-docs
+// Serve Swagger docs at http://localhost:3010/api-docs
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 
 
