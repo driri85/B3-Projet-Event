@@ -12,7 +12,7 @@ jobs:
     env:
       CONTAINER_NAME: node-backend
       IMAGE_NAME: node-backend
-      PORT: 3000
+      PORT: 3010
       MONGODB_URI: ${{ secrets.MONGODB_URI }}
       SUPER_ADMIN_EMAIL: ${{ secrets.SUPER_ADMIN_EMAIL }}
       SECRET_JWT: ${{secrets.SECRET_JWT}}
