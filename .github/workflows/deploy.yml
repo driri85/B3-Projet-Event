@@ -35,7 +35,7 @@ jobs:
           --name $CONTAINER_NAME \
           --restart unless-stopped \
           --network B3-ProjetEvent-net \
-          -p $PORT:$PORT \
+          -p $PORT:3000 \
           -e MONGODB_URI="$MONGODB_URI" \
           -e SUPER_ADMIN_EMAIL="$SUPER_ADMIN_EMAIL" \
           -e SECRET_JWT="$SECRET_JWT" \
